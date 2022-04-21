@@ -7,6 +7,7 @@
 #include <string>
 using std::string;
 using std::vector;
+
 using namespace sf;
 
 class Chart
@@ -20,7 +21,8 @@ public:
 	RectangleShape yAxis;
 	vector<RectangleShape> bars;
 	string title;
-
+	float barWidth;
+	float barSpacing;
 	Chart()
 	{
 		width = 900;
@@ -39,7 +41,6 @@ public:
 	{
 		RectangleShape bar = bars[barIndex];
 		float iH = bar.getSize().y;
-		std::cout << iH << std::endl;
 		bar.setSize(Vector2f(bar.getSize().x, barHeight));
 		float newY;
 		if (iH > barHeight)
@@ -80,6 +81,8 @@ public:
 	}
 	void configBars()
 	{
+		this->barWidth=100;
+		this->barSpacing=10;
 		for (int i = 0; i < this->numberBars; i++)
 		{
 			RectangleShape bar(Vector2f(100, 100));
@@ -105,17 +108,59 @@ public:
 			window.draw(bars[i]);
 		}
 	}
+	bool validIndex(int index){
+		if(index>=0 && index<numberBars){
+			return true;
+		}
+		return false;
+	}
+	vector<vector<float>> computeBarWithSpacing(){
+		vector<vector<float>> barsWithSpacing;
+		for(RectangleShape bar:this->bars){
+			vector<float> barInfo;
+			barInfo.push_back(bar.getSize().x);
+			barInfo.push_back(bar.getPosition().x);
+			barsWithSpacing.push_back(barInfo);
+		}
+		return barsWithSpacing;
+	}
 };
 int main()
 {
 	RenderWindow window(VideoMode(900, 900), "SFML works!");
-	Chart graph(900, 900, 3);
+	Chart graph(900, 900, 5);
 	graph.configAxis();
 	graph.configBars();
 	graph.setBarHeight(0, 200);
 	graph.setBarColor(0, Color::Red);
 	graph.setAxisColor(Color::Yellow);
 	graph.setTitle("It works!");
+	bool isValid = graph.validIndex(8);
+	std::cout<<"Is valid index = "<<isValid<<std::endl;
+	vector<vector<float>> barsWithSpacing = graph.computeBarWithSpacing();
+	int count=1;
+	for(vector<float> v:barsWithSpacing){
+		int internalCount=0;
+		float lastWidth,lastSpace;
+		std::cout <<"Bar number "<<count;
+		for(float f:v){
+			if(internalCount==0){
+				std::cout<<" Width= "<<f<<" ";
+				lastWidth=f;
+			}else{
+				float space = f-lastWidth-lastSpace;
+				if(space<0){
+					std::cout<<"Spacing= "<<f<<" ";
+				}else{
+					std::cout<<"Spacing= "<<space<<" ";
+				}
+				lastSpace=f;
+			}
+			internalCount++;
+		}
+		std::cout<<std::endl;
+		count++;
+	}
 	while (window.isOpen())
 	{
 		// check all the window's events that were triggered since the last iteration of the loop
