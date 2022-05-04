@@ -1,14 +1,16 @@
-// ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
 #include <string>
-using std::string;
-using std::vector;
-
-using namespace sf;
+using namespace std;
+using sf::Color;
+using sf::RenderWindow;
+using sf::CircleShape;
+using sf::Vector2f;
+using sf::Event;
+using sf::RectangleShape;
+using sf::VideoMode;
 
 class Chart
 {
@@ -133,6 +135,8 @@ int main()
 	graph.configBars();
 	graph.setBarHeight(0, 200);
 	graph.setBarColor(0, Color::Red);
+	graph.setBarHeight(1,400);
+	graph.setBarColor(1,Color::Blue);
 	graph.setAxisColor(Color::Yellow);
 	graph.setTitle("It works!");
 	bool isValid = graph.validIndex(8);
